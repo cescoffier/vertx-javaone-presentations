@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Vert.x</title>
+
+    <meta name="description" content="Vert.x is a tool-kit for building reactive applications on the JVM.">
+    <meta name="author" content="Clement Escoffier">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/vertx.css" id="theme">
+    <link rel="stylesheet" href="css/github.css" id="highlithjs">
+
+    <!-- Code syntax highlighting -->
+    <!--<link rel="stylesheet" href="lib/css/zenburn.css">-->
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+    <!-- Any section element inside of this container is displayed as a slide -->
+    <div class="slides">
+        <section>
+            <h1 class="script">Reactive distributed systems with Vert.x</h1>
+            <h2 class="script" style="color: #222">
+                Clement Escoffier
+            </h2>
+            <h3 class="straight" style="font-weight: bold">Red Hat</h3>
+        </section>
+
+        <section>
+            <section>
+                <h2 class="script" style="color: #222">
+                    <strong>Vert.x</strong> is a <strong>toolkit</strong> to build <strong>distributed</strong> and
+                    <strong>reactive</strong> systems on top of the <strong>JVM</strong> using an
+                    <strong>asynchronous non-blocking</strong> development model.
+                </h2>
+            </section>
+
+            <section>
+                <h2>Toolkit</h2>
+                <ul>
+                    <li>Vert.x is a plain boring <strong>jar</strong></li>
+                    <li>Vert.x components are plain boring jars</li>
+                    <li>Your application depends on this set of jars (classpath, <em>fat-jar</em>, ...)</li>
+                </ul>
+                <img src="img/classpath-slides.png">
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Toolkit</h2>-->
+                <!--<p>These slides are served by a <strong>vert.x</strong> application:</p>-->
+                <!--<ul>-->
+                    <!--<li>packaged as a <em>fat jar</em></li>-->
+                    <!--<li>vertx-core: the main vert.x component</li>-->
+                    <!--<li>vertx-web: a component to build modern web applications</li>-->
+                    <!--<li>vertx-hazelcast: an implementation of the vert.x cluster manager</li>-->
+                <!--</ul>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Distributed</h2>-->
+
+                <!--<img src="img/distributed-wordcloud.png" width="80%">-->
+            <!--</section>-->
+
+            <section>
+                <h2>Distributed</h2>
+
+                <blockquote>
+                    &ldquo;You know you have a distributed system when the crash of a computer you've never heards
+                    of stops you from getting any work done.&rdquo; (Leslie Lamport)
+                </blockquote>
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Distributed</h2>-->
+
+                <!--<p>Fallacies of distributed computing:</p>-->
+                <!--<ul>-->
+                    <!--<li>The network is <strong>reliable</strong></li>-->
+                    <!--<li>The latency is <strong>0</strong></li>-->
+                    <!--<li>The bandwidth is infinite</li>-->
+                    <!--<li>The network is secure</li>-->
+                    <!--<li>The topology does <strong>not</strong> change</li>-->
+                    <!--<li>There is one administrator</li>-->
+                    <!--<li>Transport cost is zero</li>-->
+                    <!--<li>The network is homogeneous</li>-->
+                <!--</ul>-->
+            <!--</section>-->
+
+            <section>
+                <h2>Reactive Systems</h2>
+
+                <ul>
+                    <li><strong>Responsive</strong> - they respond in an <em>acceptable</em> time</li>
+                    <li><strong>Elastic</strong> - they scale up and down</li>
+                    <li><strong>Resilient</strong> - they are designed to handle failures <em>gracefully</em></li>
+                    <li><strong>Asynchronous</strong> - they interact using async messages</li>
+                </ul>
+                <p><a href="http://www.reactivemanifesto.org/">http://www.reactivemanifesto.org/</a></p>
+            </section>
+
+            <section>
+                <h2>Reactive Systems != Reactive Programming</h2>
+                <img src="img/reactive-prog-vs-system.png"/>
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Reactive Systems + Reactive Programming</h2>-->
+                <!--<img src="img/reactive-prog-and-system.png" width="80%"/>-->
+            <!--</section>-->
+
+            <section>
+                <h2>Polyglot</h2>
+
+                <p>Vert.x applications can be developed using</p>
+                <ul>
+                    <li>Java</li>
+                    <li>Groovy</li>
+                    <li>Ruby (JRuby)</li>
+                    <li>JavaScript (Nashorn)</li>
+                    <li>Ceylon</li>
+                    <li><em>Scala</em></li>
+                    <li><em>Kotlin</em></li>
+                </ul>
+            </section>
+
+        </section>
+
+        <section>
+            <section>
+                <h1>Vert.x</h1>
+                <p>A toolkit to build distributed systems</p>
+            </section>
+
+            <section>
+                <h2>Vert.x</h2>
+
+                <p>Build <strong>distributed</strong> systems:</p>
+
+                <ul>
+                    <li>Do not hide the <strong>complexity</strong></li>
+                    <li><strong>Failure</strong> as first-class citizen</li>
+                    <li>Provide the building blocks, not an all-in-one solution</li>
+                </ul>
+            </section>
+
+
+            <section>
+                <h2>What does Vert.x provide ?</h2>
+
+                <ul>
+                    <li>TCP, UDP, HTTP 1 & 2 servers and clients</li>
+                    <li>(non-blocking) DNS client</li>
+                    <li>Clustering</li>
+                    <li>Event bus (messaging)</li>
+                    <li>Distributed data structures</li>
+                    <li>(built-in) Load-balancing</li>
+                    <li>(built-in) Fail-over</li>
+                    <li>Pluggable service discovery, circuit-breaker</li>
+                    <li>Metrics, Shell</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Reactive</h2>
+
+                <p>Build <strong>reactive distributed</strong> systems:</p>
+
+                <ul>
+                    <li><strong>Responsive</strong> - fast, is able to handle a large number of events / connections
+                    </li>
+                    <li><strong>Elastic</strong> - scale up and down by just starting and stopping nodes, round-robin
+                    </li>
+                    <li><strong>Resilient</strong> - failure as first-class citizen, fail-over</li>
+                    <li><strong>Asynchronous message-passing</strong> - asynchronous and non-blocking development model
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Asynchronous &amp; non-blocking</h2>
+
+                <img src="img/blocking-non-blocking.png">
+            </section>
+
+            <section>
+                <h2>Asynchronous &amp; non-blocking</h2>
+                <pre><code class="hljs java">
+// Synchronous development model
+X x = doSomething(a, b);
+
+// Asynchronous development model - callback variant
+doSomething(a, b, // Params
+    ar -> {       // Last param is a Handler&lt;AsyncResult&lt;X&gt;&gt;
+       // Result handler
+    });
+
+// Asynchronous development model - future variant
+Future&lt;X&gt; future = doSomething(a, b);
+future.setHandler(
+    ar -> {  /* Completion handler */ });
+                </code></pre>
+            </section>
+
+            <!--<section>-->
+            <!--<h2>Asynchronous operation &amp; Concurrency</h2>-->
+
+            <!--<img src="img/async-concurrency.png" width="80%">-->
+            <!--</section>-->
+
+        </section>
+
+        <section>
+            <section>
+                <h1>Request - Reply interactions</h1>
+                <p>HTTP, TCP, RPC...</p>
+            </section>
+
+            <section>
+                <h2>Vert.x Hello World</h2>
+                <pre><code class="hljs java">
+Vertx vertx = Vertx.vertx();
+vertx.createHttpServer()
+  .requestHandler(request -> {
+    // Handler receiving requests
+    request.response().end("World !");
+  })
+  .listen(8080, ar -> {
+    // Handler receiving start sequence completion (AsyncResult)
+    if (ar.succeeded()) {
+      System.out.println("Server started on port "
+        + ar.result().actualPort());
+    } else {
+      ar.cause().printStackTrace();
+    }
+  });
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>Vert.x Hello World</h2>
+
+                <div class="button" id="http-hello-world-btn">Invoke</div>
+                <div class="result" id="http-hello-world-result">
+
+                </div>
+            </section>
+
+            <section>
+                <h2>Event loop<strong>s</strong></h2>
+                <img src="img/event-loop-2.png">
+            </section>
+
+            <section>
+                <h2>Vert.x Async HTTP Client</h2>
+
+                <pre><code class="hljs java">
+HttpClient client = vertx.createHttpClient(
+        new HttpClientOptions()
+                    .setDefaultHost("localhost")
+                    .setDefaultPort(8081));
+
+client.getNow("/", response -> {
+  // Handler receiving the response
+
+  // Get the content
+  response.bodyHandler(buffer -> {
+    // Handler to read the content
+  });
+});
+</code></pre>
+            </section>
+
+            <section>
+                <h2>Chained HTTP requests</h2>
+
+                <img src="img/arch-http-chain.png">
+
+                <div class="button" id="http-chained-hello-world-btn">Invoke</div>
+                <div class="result" id="http-chained-hello-world-result">
+
+                </div>
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Interacting with blocking systems</h2>-->
+
+                <!--<img src="img/blocking-executeBlocking.png">-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Interacting with blocking systems</h2>-->
+
+                <!--<img src="img/blocking-data-access.png">-->
+            <!--</section>-->
+        </section>
+
+        <section>
+            <section>
+                <h1>Messaging</h1>
+                <p>The eventbus - the spine of Vert.x applications...</p>
+            </section>
+
+            <section>
+                <h2>The event bus</h2>
+
+                <p>The event bus is the <strong>nervous system</strong> of vert.x:</p>
+                <ul>
+                    <li>Allows different components to communicate regardless</li>
+                    <ul>
+                        <li>the implementation language and their location</li>
+                        <li>whether they run on vert.x or not (using bridges)</li>
+                    </ul>
+                    <br/>
+                    <li><strong>Address</strong>: Messages are sent to an address</li>
+                    <li><strong>Handler</strong>: Messages are received by <code>Handler</code>s.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Point to Point</h2>
+                <img src="img/eventbus-p2p.png" width="70%">
+                <pre><code class="hljs java" data-noescape data-trim>
+vertx.eventBus().send("address", "message");
+vertx.eventBus().consumer("address", message -> {});
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>Publish / Subscribe</h2>
+                <img src="img/eventbus-pub-sub.png" width="70%">
+                <pre><code class="hljs java" data-noescape data-trim>
+vertx.eventBus().publish("address", "message");
+vertx.eventBus().consumer("address", message -> {});
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>Request / Response</h2>
+                <img src="img/eventbus-rr.png" width="65%">
+                <pre><code class="hljs java" data-noescape data-trim>
+vertx.eventBus().send("address", "message", reply -> {});
+vertx.eventBus().consumer("address",
+    message -> { message.reply("response"); });
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>From local to clustered</h2>
+                <p>Vert.x instances form a <strong>cluster</strong></p>
+                <pre><code class="hljs java" data-noescape data-trim>
+<mark>Vertx.clusteredVertx(new VertxOptions(), result -> { </mark>
+  if (result.failed()) {
+    System.err.println("Cannot create a clustered vert.x : "
+                    + result.cause());
+  } else {
+    Vertx vertx = result.result();
+    // ...
+  }
+});</code></pre>
+                <p>The event bus is distributed on all the cluster members</p>
+            </section>
+
+            <section>
+                <h2>Distributed event bus</h2>
+                <p>Almost anything can send and receive messages</p>
+                <img src="img/eventbus-clustered.png" width="80%">
+            </section>
+
+            <section>
+                <h2>Distributed event bus</h2>
+                <p>Let's have a java (Vert.x) app, and a node app sending data just here:</p>
+
+                <div>
+                    <pre><code class="hljs eventbus" style="line-height: 2.5ex;
+  height: 250px; overflow: hidden;" data-trim id="eventbus-bridge-content"></code></pre>
+                </div>
+            </section>
+
+            <section>
+                <h2>Distributed event bus</h2>
+                <img src="img/eventbus-bridges.png" width="60%">
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Eventbus clients and bridges</h2>-->
+
+                <!--<p class="left">Bridges</p>-->
+                <!--<ul class="left">-->
+                    <!--<li>SockJS: browser, node.js</li>-->
+                    <!--<li>TCP: languages / systems able to open a TCP socket</li>-->
+                    <!--<li>Stomp</li>-->
+                    <!--<li>AMQP</li>-->
+                    <!--<li>Camel</li>-->
+                <!--</ul>-->
+
+                <!--<p class="left">Clients:</p>-->
+                <!--<ul class="left">-->
+                    <!--<li>Go, C#, C, Python...</li>-->
+                <!--</ul>-->
+            <!--</section>-->
+
+        </section>
+        <section>
+            <section>
+                <h1>Reliability patterns</h1>
+                <p>Don't be fool, be prepared to fail</p>
+            </section>
+
+            <section>
+                <h2>Reliability</h2>
+                <br/>
+                <p>It's not about being bug-free or bullet proof,<br/>we a <strong>humans</strong>.</p>
+                <br/>
+                <p>It's about being prepared to <strong>fail</strong>,<br/>and handling these <strong>failures</strong>.</p>
+            </section>
+
+            <section>
+                <h2>Managing failures</h2>
+                <p>Distributed communication may fail</p>
+                <p><code>AsyncResult</code> lets us manage these failures:</p>
+
+                <pre><code class="hljs java" data-trim data-noescape="">
+doSomethingAsync(param1, param2,
+  ar -> {
+    if (ar.failed()) {
+      System.out.println("D'oh, it has failed !");
+    } else {
+      System.out.println("Everything fine ! ");
+    }
+});</code></pre>
+            </section>
+
+            <section>
+                <h2>Managing failures</h2>
+                <p>Adding timeouts</p>
+                <pre><code class="hljs java" data-trim data-noescape="">
+vertx.eventbus().send(..., ...,
+  <mark>new DeliveryOptions().setSendTimeout(1000),</mark>
+  reply -> {
+    if (reply.failed()) {
+      System.out.println("D'oh, he did not reply to me !");
+    } else {
+      System.out.println("Got a mail " + reply.result().body());
+    }
+});</code></pre>
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Managing failures</h2>-->
+                <!--<img src="img/eventbus-request-reply-demo.png" width="50%">-->
+                <!--<div id="request-reply" class="button">Invoke</div>-->
+                <!--<div>-->
+                    <!--<pre><code class="hljs eventbus" style="line-height: 2.5ex;-->
+  <!--height: 170px; overflow: hidden;" data-trim id="request-reply-result"></code></pre>-->
+                <!--</div>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Managing failure</h2>-->
+
+<!--<pre><code class="hljs java" data-trim data-noescape="">-->
+<!--client.get("/", response -> {-->
+  <!--response-->
+    <!--.exceptionHandler(t -> {-->
+      <!--// If the content cannot be read-->
+      <!--rc.response().end("Sorry... " + t.getMessage());-->
+    <!--})-->
+    <!--.bodyHandler(buffer -> {-->
+      <!--rc.response().end("Ola " + buffer.toString());-->
+    <!--});-->
+  <!--})-->
+    <!--.setTimeout(3000)-->
+    <!--.exceptionHandler(t -> {-->
+      <!--// If the connection cannot be established-->
+      <!--rc.response().end("Sorry... " + t.getMessage());-->
+    <!--})-->
+    <!--.end();</code></pre>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Managing failure</h2>-->
+                <!--<img src="img/arch-http-chain.png" width="50%">-->
+                <!--<div id="failure-chain-btn" class="button">Invoke</div>-->
+                <!--<div>-->
+                    <!--<pre><code class="hljs" style="line-height: 2.5ex;-->
+  <!--height: 170px; overflow: hidden;" data-trim id="failure-chain-result"></code></pre>-->
+                <!--</div>-->
+            <!--</section>-->
+
+            <section>
+                <h2>Circuit Breaker</h2>
+
+                <img src="img/circuit-breaker.png" width="80%"/>
+            </section>
+
+            <section>
+                <h2>Circuit Breaker</h2>
+
+<pre><code class="hljs java" data-trim data-noescape="">
+cb.executeWithFallback(future -> {
+  // Async operation
+  client.get("/", response -> {
+    response.bodyHandler(buffer -> {
+      future.complete("Ola " + buffer.toString());
+    });
+  })
+    .exceptionHandler(future::fail)
+    .end();
+  },
+
+  // Fallback
+  t -> "Sorry... " + t.getMessage() + " (" + cb.state() + ")"
+)
+  // Handler called when the operation has completed
+  .setHandler(content -> /* ... */);
+</code></pre>
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Circuit Breaker</h2>-->
+                <!--<img src="img/arch-http-chain.png" width="50%">-->
+                <!--<div id="failure-chain-cb-btn" class="button">Invoke</div>-->
+                <!--<div>-->
+                    <!--<pre><code class="hljs" style="line-height: 2.5ex;-->
+  <!--height: 170px; overflow: hidden;" data-trim id="failure-chain-cb-result"></code></pre>-->
+                <!--</div>-->
+            <!--</section>-->
+
+            <section>
+                <h2>Verticle Fail-Over</h2>
+
+                <ul>
+                    <li>Verticles are chunk of code that get deployed and run by Vert.x</li>
+                    <li>Verticles can deploy other verticles</li>
+                    <li>Verticles can be written in Java, Groovy, JavaScript, Ruby, Ceylon...</li>
+                </ul>
+
+                <img src="img/verticle--sub.png" width="30%"/>
+            </section>
+
+            <section>
+                <h2>Verticle Fail-Over</h2>
+
+                <p>In <strong>High-Availability</strong> mode, verticles deployed on a node that
+                    <strong>crashes</strong> are redeployed on a sane node of the cluster.</p>
+
+                <img src="img/verticle-fail-over.png" width="80%"/>
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Verticle Fail-Over</h2>-->
+
+                <!--<div id="fail-over-btn" class="button">Invoke</div>-->
+                <!--<div>-->
+                    <!--<pre><code class="hljs" style="line-height: 2.5ex;-->
+  <!--height: 170px; overflow: hidden;" data-trim id="fail-over-result"></code></pre>-->
+                <!--</div>-->
+            <!--</section>-->
+
+        </section>
+        <section>
+            <section>
+                <h1>Elasticity patterns</h1>
+                <p>Be prepared to be famous</p>
+            </section>
+
+            <section>
+                <h2>Elasticity patterns</h2>
+                <img src="img/scalability.png" width="80%"/>
+            </section>
+
+            <section>
+                <h2>Balancing the load</h2>
+                <p>When several consumers listen to the same address, Vert.x dispatches the sent
+                    messages using a <strong>round robin</strong>.</p>
+
+                <p>So, to improve the scalability, just spawn a new node!</p>
+            </section>
+
+            <section>
+                <h2>Balancing the load</h2>
+
+                <img src="img/load-balancing-eventbus.png" width="80%"/>
+            </section>
+
+            <!--<section>-->
+                <!--<h2>Balancing the load</h2>-->
+
+                <!--<div id="load-balancing-btn" class="button">Invoke</div>-->
+                <!--<div>-->
+                    <!--<pre><code class="hljs" style="line-height: 2.5ex;-->
+  <!--height: 170px; overflow: hidden;" data-trim id="load-balancing-result"></code></pre>-->
+                <!--</div>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Scaling HTTP</h2>-->
+
+                <!--<img src="img/scaling-http.png">-->
+            <!--</section>-->
+        </section>
+
+        <!--<section>-->
+            <!--<section>-->
+                <!--<h1>Distributed data structures</h1>-->
+                <!--<p>Consensus, leader election and other distributed crazyness</p>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Distributed data structures</h2>-->
+                <!--<p>Nodes can share data:</p>-->
+                <!--<ul>-->
+                    <!--<li>Lock</li>-->
+                    <!--<li>Counter</li>-->
+                    <!--<li>Map</li>-->
+                <!--</ul>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Counters</h2>-->
+                <!--<p>Distributed structures => Asynchronous API, and may fail</p>-->
+                <!--<pre><code class="hljs java" data-noescape data-trim>-->
+<!--// Get the counter-->
+<!--vertx.sharedData().getCounter("some-counter", ar -> {-->
+  <!--if (ar.succeeded()) {-->
+    <!--Counter counter = ar.result();-->
+    <!--// Use it-->
+    <!--counter.incrementAndGet(nv -> {-->
+      <!--System.out.println("Value = " + nv.result());-->
+    <!--});-->
+  <!--}-->
+<!--});</code></pre>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Locks</h2>-->
+                <!--<p>For leader election</p>-->
+                <!--<pre><code class="hljs java" data-noescape data-trim>-->
+<!--vertx.sharedData().getLock("leader-lock", ar -> {-->
+  <!--if (ar.succeeded()) {-->
+    <!--// Lock acquired, you are the leader-->
+    <!--Lock lock = ar.result();-->
+    <!--// do something-->
+    <!--lock.release();-->
+  <!--} else {-->
+    <!--// You are not the leader-->
+  <!--}-->
+<!--});</code></pre>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Distributed Maps</h2>-->
+
+                <!--<pre><code class="hljs java" data-trim data-noescape>-->
+<!--vertx.sharedData().getClusterWideMap("some-map", ar -> {-->
+  <!--if (ar.succeeded()) {-->
+    <!--AsyncMap map = ar.result();-->
+    <!--map.put("foo", "bar", done -> {-->
+      <!--if (done.succeeded()) {-->
+        <!--System.out.println("entry inserted in the map");-->
+      <!--} else {-->
+        <!--System.out.println("entry not inserted : " + done.cause());-->
+      <!--}-->
+  <!--});-->
+<!--});</code></pre>-->
+            <!--</section>-->
+        <!--</section>-->
+
+        <!--<section>-->
+            <!--<section>-->
+                <!--<h1>What about performances ?</h1>-->
+                <!--<p>Because we do it well, and we do it fast</p>-->
+            <!--</section>-->
+
+            <!--<section>-->
+                <!--<h2>Techempower - fortune</h2>-->
+                <!--<p>Request -> JDBC (query) -> Template engine -> Response</p>-->
+
+                <!--<img src="img/performances-fortune.png" width="80%">-->
+            <!--</section>-->
+        <!--</section>-->
+
+        <section>
+            <section>
+                <h1>This is not the <code>end();</code></h1>
+                <p>But the first step on the Vert.x path</p>
+            </section>
+
+            <section>
+
+                <img src="img/wordcloud.png" width="100%">
+
+            </section>
+
+            <section>
+                <h2>How to start ?</h2>
+
+                <ul>
+                    <li><a class="black" href="http://vertx.io">http://vertx.io</a></li>
+                    <li><a class="black" href="http://vertx.io/blog/posts/introduction-to-vertx.html">
+                        http://vertx.io/blog/posts/introduction-to-vertx.html</a></li>
+                    <li><a class="black" href="http://escoffier.me/vertx-hol/">
+                        http://escoffier.me/vertx-hol/ (<span class="purple">HOL3180</span>)</a></li>
+                </ul>
+                <p></p>
+                <img style="margin-bottom: 0" src="img/jax.png" width="50%"/>
+                <p style="margin-top: 0"><a class="black" href="https://jaxlondon.com/jax-awards/">https://jaxlondon.com/jax-awards/</a></p>
+            </section>
+        </section>
+    </div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script src="js/jquery-2.2.3.min.js"></script>
+<script src="js/sockjs-0.3.4.min.js"></script>
+<script src="js/vertx-eventbus.js"></script>
+<script src="js/interactions.js"></script>
+
+<script>
+
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+            {
+                src: 'lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            }
+            },
+            {
+                src: 'plugin/markdown/marked.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            },
+            {src: 'plugin/zoom-js/zoom.js', async: true},
+            {src: 'plugin/notes/notes.js', async: true}
+        ]
+    });
+
+</script>
+
+<script>
+    var eb = new EventBus('/eventbus');
+
+    eb.onopen = function () {
+        console.log("Opened !");
+        // section 1 - distributed
+        eb.registerHandler('data.hello', function (error, message) {
+            console.log('received a message: ' + JSON.stringify(message));
+            $("#distributed-content").html("last message: " + message.body);
+        });
+
+        eb.registerHandler('eventbus-example', function (error, message) {
+            var content = $("#eventbus-bridge-content").prepend("<p>"
+                    + message.body.message + "</p>");
+        });
+
+        eb.registerHandler('data.random', function (error, message) {
+            handlePolyglotMessage(message.body);
+        });
+
+    };
+
+    setTimeout(function () {
+        if (eb.state == 3) {
+            console.log("Cannot connect to the event bus bridge");
+            $(".eventbus").html("Not connected to the event bus bridge");
+        }
+    }, 1000);
+
+    $("#request-reply").click(function () {
+        eb.send("eventbus-example-rr", "vert.x", function (err, res) {
+            console.log("reply", err, res);
+            var content = $("#request-reply-result");
+            if (err) {
+                content.prepend("<p>" + err.message + "</p>");
+            } else {
+                content.prepend("<p>" + res.body + "</p>");
+            }
+        });
+    });
+
+    $("#load-balancing-btn").click(function () {
+        eb.send("load-balancing", "any", function (err, res) {
+            var content = $("#load-balancing-result");
+            if (err) {
+                content.prepend("<p>" + err.message + "</p>");
+            } else {
+                content.prepend("<p>" + res.body + "</p>");
+            }
+        });
+    })
+
+</script>
+
+</body>
+</html>
